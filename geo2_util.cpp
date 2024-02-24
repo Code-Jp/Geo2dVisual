@@ -123,7 +123,7 @@ namespace Geo2Util {
                 + toString(rect.max());
     }
 
-// Customized toString: toString(KernelObject_Visual)
+// Customized visual toString: toString(KernelObject_Visual)
     std::string toString(const Point_2_Visual& pv) {
         std::ostringstream s;
         s << std::fixed << std::setprecision(10) << "POINT " << pv.x() << " " 
@@ -161,11 +161,20 @@ namespace Geo2Util {
         return "TRIANGLE " + toString(triv.getBondaryColor()) + " " 
                 + toString(triv.getBoundaryType()) + " " 
                 + toString(triv.getInteriorColor()) + "\n"
-                + toString(triv[0]) + "\n"
-                + toString(triv[1]) + "\n"
-                + toString(triv[2]);
+                + toString(triv.vertex(0)) + "\n"
+                + toString(triv.vertex(1)) + "\n"
+                + toString(triv.vertex(2));
     }
-    
+
+    std::string toString(const Iso_rectangle_2_Visual& rectv) {
+
+        return "RECTANGLE " + toString(rectv.getBondaryColor()) + " "
+                + toString(rectv.getBoundaryType()) + " "
+                + toString(rectv.getInteriorColor()) + "\n"
+                + toString(rectv.min()) + "\n"
+                + toString(rectv.max());
+    }    
+
 // Visual Wrapper Classes:
 // Point_2_Visual
     Point_2_Visual::Point_2_Visual(const Point_2& p)
@@ -175,9 +184,9 @@ namespace Geo2Util {
             , m_bType {BoundaryType::Solid} {
     }
 
-    Point_2_Visual::Point_2_Visual(const Point_2& p, const Color& boudaryColor, const Color& interiorColor, const BoundaryType& btype) 
+    Point_2_Visual::Point_2_Visual(const Point_2& p, const Color& boundaryColor, const Color& interiorColor, const BoundaryType& btype) 
         : m_p(p.x(), p.y())
-            , m_boundaryColor{boudaryColor}
+            , m_boundaryColor{boundaryColor}
             , m_interiorColor{interiorColor}
             , m_bType {btype} {
     }
@@ -226,10 +235,10 @@ namespace Geo2Util {
             , m_bType {BoundaryType::Solid} {
     }
 
-    Segment_2_Visual::Segment_2_Visual(const Point_2_Visual& s, const Point_2_Visual& t, const Color& boudaryColor, const BoundaryType& btype)
+    Segment_2_Visual::Segment_2_Visual(const Point_2_Visual& s, const Point_2_Visual& t, const Color& boundaryColor, const BoundaryType& btype)
         : m_source(s)
             , m_target(t)
-            , m_boundaryColor{boudaryColor}
+            , m_boundaryColor{boundaryColor}
             , m_bType{btype} {
     }
 
@@ -319,19 +328,19 @@ namespace Geo2Util {
             , m_interiorColor{OpaqueBlack}
             , m_bType{BoundaryType::Solid} {
         m_vertices.reserve(3);
-        m_vertices.emplace_back(Point_2_Visual(p));
-        m_vertices.emplace_back(Point_2_Visual(q));
-        m_vertices.emplace_back(Point_2_Visual(r));
+        m_vertices.push_back(Point_2_Visual(p));
+        m_vertices.push_back(Point_2_Visual(q));
+        m_vertices.push_back(Point_2_Visual(r));
     }
 
-    Triangle_2_Visual::Triangle_2_Visual(const Point_2_Visual& p, const Point_2_Visual& q, const Point_2_Visual& r, const Color& boudaryColor, const Color& interiorColor, const BoundaryType& btype) 
-        : m_boundaryColor{boudaryColor}
+    Triangle_2_Visual::Triangle_2_Visual(const Point_2_Visual& p, const Point_2_Visual& q, const Point_2_Visual& r, const Color& boundaryColor, const Color& interiorColor, const BoundaryType& btype) 
+        : m_boundaryColor{boundaryColor}
             , m_interiorColor{interiorColor}
             , m_bType{btype} {
         m_vertices.reserve(3);
-        m_vertices.emplace_back(Point_2_Visual(p));
-        m_vertices.emplace_back(Point_2_Visual(q));
-        m_vertices.emplace_back(Point_2_Visual(r));
+        m_vertices.push_back(Point_2_Visual(p));
+        m_vertices.push_back(Point_2_Visual(q));
+        m_vertices.push_back(Point_2_Visual(r));
     }
 
     void Triangle_2_Visual::setBondaryColor(const Color& color) {
@@ -368,4 +377,57 @@ namespace Geo2Util {
         }
         return m_vertices[i%3];
     }
+
+// Iso_rectangle_2_Visual
+    Iso_rectangle_2_Visual::Iso_rectangle_2_Visual(const Point_2_Visual& p, const Point_2_Visual& q)
+        : m_lowerLeft(p)
+            , m_upperRight(q)
+            , m_boundaryColor{OpaqueBlack}
+            , m_interiorColor{OpaqueBlack}
+            , m_bType{BoundaryType::Solid} {
+    }
+
+    Iso_rectangle_2_Visual::Iso_rectangle_2_Visual(const Point_2_Visual& p, const Point_2_Visual& q, const Color& boundaryColor, const Color& interiorColor, const BoundaryType& btype)
+        : m_lowerLeft(p)
+            , m_upperRight(q)
+            , m_boundaryColor{boundaryColor}
+            , m_interiorColor{interiorColor}
+            , m_bType{btype} {
+    }
+
+    void Iso_rectangle_2_Visual::setBondaryColor(const Color& color) {
+        m_boundaryColor = color;
+    }
+
+    Color Iso_rectangle_2_Visual::getBondaryColor() const {
+        return m_boundaryColor;
+    }
+
+    void Iso_rectangle_2_Visual::setInteriorColor(const Color& color) {
+        m_interiorColor = color;
+    }
+
+    Color Iso_rectangle_2_Visual::getInteriorColor() const {
+        return m_interiorColor;
+    }
+
+    void Iso_rectangle_2_Visual::setBoundaryType(const BoundaryType& btype) {
+        m_bType = btype;
+    }
+
+    BoundaryType Iso_rectangle_2_Visual::getBoundaryType() const {
+        return m_bType;
+    }
+
+    Iso_rectangle_2 Iso_rectangle_2_Visual::KernelObject() const {
+        return Iso_rectangle_2(m_lowerLeft.KernelObject(), m_upperRight.KernelObject());
+    }
+
+    Point_2_Visual Iso_rectangle_2_Visual::min() const {
+        return m_lowerLeft;
+    }
+    Point_2_Visual Iso_rectangle_2_Visual::max() const {
+        return m_upperRight;
+    }
+
 } // namespace Geo2Util

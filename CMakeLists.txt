@@ -38,8 +38,6 @@ endif()
 
 add_executable( geo2d_visual  geo2_util.cpp main.cpp )
 
-target_include_directories( geo2d_visual PRIVATE $(CMAKE_CURRENT_LIST_DIR))
-
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS geo2d_visual )
 
 # Link the executable to CGAL and third-party libraries

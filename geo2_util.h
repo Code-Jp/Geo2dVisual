@@ -43,8 +43,9 @@ namespace Geo2Util {
         // m_bType operations
         // Retriece core data 
         // Optional: KernelObject() -- return a plain CGAL kernel object of the same type
-        // toString() -- Object serialization
-        
+        // ~~toString() -- Object serialization~~ (Deprecated; use toString(KernelObject_Visual) instead for unify toString API)
+
+// Wrapper classes for visualization
     class Point_2_Visual {
     private:
         Color m_boundaryColor;
@@ -165,8 +166,8 @@ namespace Geo2Util {
         Point_2_Visual m_upperRight;
     public:
         // Constructors
-        Iso_rectangle_2_Visual(const Iso_rectangle_2& p);
-        Iso_rectangle_2_Visual(const Iso_rectangle_2& p, const Color& boudaryColor, const Color& interiorColor, const BoundaryType& btype);
+        Iso_rectangle_2_Visual(const Point_2_Visual& p, const Point_2_Visual& q);
+        Iso_rectangle_2_Visual(const Point_2_Visual& p, const Point_2_Visual& q, const Color& boudaryColor, const Color& interiorColor, const BoundaryType& btype);
 
         // Visual manipulation
         void setBondaryColor(const Color& color);
@@ -182,26 +183,26 @@ namespace Geo2Util {
         // Return core data
         Point_2_Visual min() const;
         Point_2_Visual max() const;
-
-        std::string toString(const Iso_rectangle_2_Visual& rect_visual) const;
     };
-    // EOF Wrapper classes for visualization
+// EOF Wrapper classes for visualization
+
     std::string toString(const Color& color);
     std::string toString(const BoundaryType& bt);
 
-    // Default toString
+// Default toString
     std::string toString(const Point_2& p);
     std::string toString(const Segment_2& seg);
     std::string toString(const Circle_2& circ);
     std::string toString(const Triangle_2& tri);
     std::string toString(const Iso_rectangle_2& rect);
-    // EOF Default toString
+// EOF Default toString
 
-    // Customized toString
+// Customized toString
     std::string toString(const Point_2_Visual& pv);
     std::string toString(const Segment_2_Visual& segv);
     std::string toString(const Circle_2_Visual& circv);
-    std::string toString(const Triangle_2_Visual& tri_visual);
-    // EOF Customized toString
+    std::string toString(const Triangle_2_Visual& triv);
+    std::string toString(const Iso_rectangle_2_Visual& rectv);
+// EOF Customized toString
     void printToFile(const std::string& filename, const std::vector<std::string>& geo2_Objects);
-}
+} // namespace Geo2Util
